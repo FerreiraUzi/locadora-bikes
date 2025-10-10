@@ -326,7 +326,7 @@ public class TelaClientes extends javax.swing.JFrame {
     }//GEN-LAST:event_btnExcluirActionPerformed
 
     private void btnListarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListarActionPerformed
-        
+       listarClientes();
 
     }//GEN-LAST:event_btnListarActionPerformed
 
