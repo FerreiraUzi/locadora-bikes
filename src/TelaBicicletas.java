@@ -6,7 +6,15 @@
 /**
  *
  * @author Etec
+ * 
+ 
  */
+import model.Bicicleta;
+import dao.BicicletaDAO;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.*;
+
 public class TelaBicicletas extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaBicicletas.class.getName());
@@ -16,6 +24,14 @@ public class TelaBicicletas extends javax.swing.JFrame {
      */
     public TelaBicicletas() {
         initComponents();
+        
+         jTable1.getSelectionModel().addListSelectionListener(e -> {
+        if (!e.getValueIsAdjusting() && jTable1.getSelectedRow() != -1) {
+            int selectedRow = jTable1.getSelectedRow();
+            txtCodigo.setText(jTable1.getValueAt(selectedRow, 1).toString());
+            cbStatus.setSelectedItem(jTable1.getValueAt(selectedRow, 2).toString());
+        }
+    });
     }
 
     /**
@@ -178,23 +194,82 @@ public class TelaBicicletas extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnNovoActionPerformed
 
-    private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
+    private void listarBicicletas() {
+    List<Bicicleta> lista = new BicicletaDAO().read();
+    DefaultTableModel modelo = (DefaultTableModel) jTable1.getModel();
+    modelo.setRowCount(0);
+    for (Bicicleta b : lista) {
+        modelo.addRow(new Object[]{b.getId(), b.getCodigo(), b.getStatus()});
+    }
+}
 
+    
+    private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
+        Bicicleta b = new Bicicleta();
+        b.setCodigo(txtCodigo.getText());
+        b.setStatus(cbStatus.getSelectedItem().toString());
+        BicicletaDAO dao = new BicicletaDAO();
+        dao.create(b);
+        listarBicicletas();
       
     }//GEN-LAST:event_btnSalvarActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        int selectedRow = jTable1.getSelectedRow();
+           if (selectedRow != -1) {
+               // Pega o ID da linha selecionada
+               int id = (int) jTable1.getValueAt(selectedRow, 0);
+               String codigo = txtCodigo.getText();
+               String status = cbStatus.getSelectedItem().toString();
 
+               Bicicleta b = new Bicicleta();
+               b.setId(id);
+               b.setCodigo(codigo);
+               b.setStatus(status);
+
+               BicicletaDAO dao = new BicicletaDAO();
+               dao.update(b);
+
+               listarBicicletas();
+
+               JOptionPane.showMessageDialog(this, "Bicicleta atualizada com sucesso!");
+           } else {
+               JOptionPane.showMessageDialog(this, "Selecione uma bicicleta na tabela para editar.");
+           }
         
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
         // TODO add your handling code here:
+        int selectedRow = jTable1.getSelectedRow();
+            if (selectedRow != -1) {
+                int confirm = JOptionPane.showConfirmDialog(this, 
+                        "Deseja realmente excluir esta bicicleta?", 
+                        "Confirmar exclusão", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    int id = (int) jTable1.getValueAt(selectedRow, 0);
+                    Bicicleta b = new Bicicleta();
+                    b.setId(id);
 
+                    BicicletaDAO dao = new BicicletaDAO();
+                    dao.delete(b);
+
+                    listarBicicletas();
+                    JOptionPane.showMessageDialog(this, "Bicicleta excluída com sucesso!");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Selecione uma bicicleta na tabela para excluir.");
+            }
         
     }//GEN-LAST:event_btnExcluirActionPerformed
 
     private void btnListarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListarActionPerformed
+        List<Bicicleta> lista = new BicicletaDAO().read();
+        DefaultTableModel modelo = (DefaultTableModel) jTable1.getModel();
+        modelo.setRowCount(0);
+        for (Bicicleta b : lista) {
+        modelo.addRow(new Object[]{b.getId(), b.getCodigo(), b.getStatus()});
+        }
 
     }//GEN-LAST:event_btnListarActionPerformed
 
