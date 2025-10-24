@@ -1,23 +1,79 @@
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author Etec
  */
+
+
 public class TelaLocacao extends javax.swing.JFrame {
-    
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaLocacao.class.getName());
+
+    // --- Listas e dados simulados ---
+    private final List<String> clientes = new ArrayList<>();
+    private final List<String> bicicletasDisponiveis = new ArrayList<>();
+    private final List<Locacao> locacoes = new ArrayList<>();
 
     /**
      * Creates new form TelaLocacao
      */
     public TelaLocacao() {
         initComponents();
+        carregarClientes();
+        carregarBicicletasDisponiveis();
+        ListarLocacoes();
     }
+
+    // --- Classe interna que representa uma locação ---
+    private static class Locacao {
+        String cliente;
+        String bicicleta;
+        boolean devolvida;
+
+        Locacao(String cliente, String bicicleta) {
+            this.cliente = cliente;
+            this.bicicleta = bicicleta;
+            this.devolvida = false;
+        }
+    }
+    
+    private void carregarClientes() {
+        clientes.addAll(Arrays.asList("João", "Maria", "Carlos", "Ana"));
+        cbClientes.removeAllItems();
+        for (String c : clientes) {
+            cbClientes.addItem(c);
+        }
+    }
+
+    private void carregarBicicletasDisponiveis() {
+        bicicletasDisponiveis.addAll(Arrays.asList("Bicicleta A", "Bicicleta B", "Bicicleta C"));
+        cbBicicletasDisponiveis.removeAllItems();
+        for (String b : bicicletasDisponiveis) {
+            cbBicicletasDisponiveis.addItem(b);
+        }
+    }
+
+    private void ListarLocacoes() {
+        DefaultTableModel model = new DefaultTableModel(
+                new Object[]{"Cliente", "Bicicleta", "Status"}, 0);
+        for (Locacao l : locacoes) {
+            model.addRow(new Object[]{
+                    l.cliente,
+                    l.bicicleta,
+                    l.devolvida ? "Devolvida" : "Ativa"
+            });
+        }
+        tabelaLocacoes.setModel(model);
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -69,6 +125,11 @@ public class TelaLocacao extends javax.swing.JFrame {
 
         btnDevolver.setText("Devolver");
         btnDevolver.setName("btnDevolver"); // NOI18N
+        btnDevolver.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDevolverActionPerformed(evt);
+            }
+        });
 
         jLabel3.setFont(new java.awt.Font("Arial", 1, 36)); // NOI18N
         jLabel3.setText("Tela de Locações:");
@@ -144,33 +205,57 @@ public class TelaLocacao extends javax.swing.JFrame {
     }//GEN-LAST:event_cbClientesActionPerformed
 
     private void btnAlugarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlugarActionPerformed
-        // TODO add your handling code here:
+     
+        String cliente = (String) cbClientes.getSelectedItem();
+        String bicicleta = (String) cbBicicletasDisponiveis.getSelectedItem();
+
+        if (cliente == null || bicicleta == null) {
+            JOptionPane.showMessageDialog(this, "Selecione cliente e bicicleta!");
+            return;
+        }
+
+        Locacao loc = new Locacao(cliente, bicicleta);
+        locacoes.add(loc);
+        bicicletasDisponiveis.remove(bicicleta);
+        cbBicicletasDisponiveis.removeItem(bicicleta);
+        atualizarTabela();
+
+        JOptionPane.showMessageDialog(this, "Bicicleta alugada com sucesso!");
+    
+
     }//GEN-LAST:event_btnAlugarActionPerformed
 
+    private void btnDevolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDevolverActionPerformed
+        int linha = tabelaLocacoes.getSelectedRow();
+        if (linha == -1) {
+            JOptionPane.showMessageDialog(this, "Selecione uma locação na tabela!");
+            return;
+        }
+
+        Locacao loc = locacoes.get(linha);
+        if (loc.devolvida) {
+            JOptionPane.showMessageDialog(this, "Essa locação já foi devolvida!");
+            return;
+             }
+
+        loc.devolvida = true;
+        bicicletasDisponiveis.add(loc.bicicleta);
+        cbBicicletasDisponiveis.addItem(loc.bicicleta);
+
+        atualizarTabela();
+        JOptionPane.showMessageDialog(this, "Bicicleta devolvida com sucesso!");
+    
+    }//GEN-LAST:event_btnDevolverActionPerformed
+
+   
+    
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
+  public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(() -> new TelaLocacao().setVisible(true));
     }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAlugar;

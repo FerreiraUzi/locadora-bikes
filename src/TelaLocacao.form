@@ -152,6 +152,9 @@
         <Property name="text" type="java.lang.String" value="Devolver"/>
         <Property name="name" type="java.lang.String" value="btnDevolver" noResource="true"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDevolverActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>

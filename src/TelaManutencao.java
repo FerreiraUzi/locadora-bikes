@@ -7,17 +7,62 @@
  *
  * @author Etec
  */
+
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
+
+
 public class TelaManutencao extends javax.swing.JFrame {
-    
+
+    // --- Dados simulados ---
+    private final List<String> bicicletas = new ArrayList<>();
+    private final List<Manutencao> manutencoes = new ArrayList<>();
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaManutencao.class.getName());
 
+
+    // --- Classe interna representando uma manutenção ---
+    private static class Manutencao {
+        String bicicleta;
+        String descricao;
+        String data;
+
+        Manutencao(String bicicleta, String descricao, String data) {
+            this.bicicleta = bicicleta;
+            this.descricao = descricao;
+            this.data = data;
+        }
+    }
     /**
      * Creates new form TelaManutencao
      */
     public TelaManutencao() {
         initComponents();
+        carregarBicicletas();
+        ListarManutencoes();
     }
 
+    private void carregarBicicletas() {
+        bicicletas.addAll(Arrays.asList("Bicicleta A", "Bicicleta B", "Bicicleta C", "Bicicleta D"));
+        cbBicicletas.removeAllItems();
+        for (String b : bicicletas) {
+            cbBicicletas.addItem(b);
+        }
+    }
+    
+    private void ListarManutencoes() {
+        DefaultTableModel model = new DefaultTableModel(
+                new Object[]{"Bicicleta", "Descrição", "Data"}, 0);
+        for (Manutencao m : manutencoes) {
+            model.addRow(new Object[]{m.bicicleta, m.descricao, m.data});
+        }
+        tabelaManutencao.setModel(model);
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -73,19 +118,29 @@ public class TelaManutencao extends javax.swing.JFrame {
 
         btnRegistrar.setText("Registrar");
         btnRegistrar.setName("btnRegistrar"); // NOI18N
+        btnRegistrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegistrarActionPerformed(evt);
+            }
+        });
 
         btnListar.setText("Listar");
         btnListar.setName("btnListar"); // NOI18N
+        btnListar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnListarActionPerformed(evt);
+            }
+        });
 
         tabelaManutencao.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Bicicleta", "Descrição", "Data"
             }
         ));
         tabelaManutencao.setName("tabelaManutencao"); // NOI18N
@@ -150,6 +205,33 @@ public class TelaManutencao extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtDataActionPerformed
 
+    private void btnListarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListarActionPerformed
+        ListarManutencoes();
+        JOptionPane.showMessageDialog(this, "Lista de manutenções atualizada!");
+    }//GEN-LAST:event_btnListarActionPerformed
+
+    private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
+         String bicicleta = (String) cbBicicletas.getSelectedItem();
+        String descricao = txtDescricao.getText();
+        String data = txtData.getText();
+
+        if (bicicleta == null || descricao.isEmpty() || data.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Preencha todos os campos!");
+            return;
+        }
+        manutencoes.add(new Manutencao(bicicleta, descricao, data));
+        ListarManutencoes();
+
+        txtDescricao.setText("");
+        txtData.setText("");
+
+        JOptionPane.showMessageDialog(this, "Manutenção registrada com sucesso!");
+        
+     
+   
+    }//GEN-LAST:event_btnRegistrarActionPerformed
+    
+    
     /**
      * @param args the command line arguments
      */
@@ -173,6 +255,7 @@ public class TelaManutencao extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new TelaManutencao().setVisible(true));
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
